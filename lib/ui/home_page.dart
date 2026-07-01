@@ -39,13 +39,8 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _setDefaultPath() async {
     try {
-      final dir = await getApplicationDocumentsDirectory();
-      final downloads = Directory('${dir.path}${Platform.pathSeparator}..${Platform.pathSeparator}Downloads');
-      if (await downloads.exists()) {
-        _selectedPath = downloads.path;
-      } else {
-        _selectedPath = dir.path;
-      }
+      final dir = await getDownloadsDirectory();
+      _selectedPath = dir?.path ?? (await getApplicationDocumentsDirectory()).path;
       if (mounted) setState(() {});
     } catch (_) {}
   }
