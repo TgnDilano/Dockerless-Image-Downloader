@@ -12,6 +12,8 @@ class DownloadController extends ChangeNotifier {
   DownloadState _state = DownloadState();
   DownloadState get state => _state;
 
+  final List<String> _logBuffer = [];
+
   String? _lastImageRef;
   String? _lastOutputPath;
 
@@ -29,8 +31,9 @@ class DownloadController extends ChangeNotifier {
   void _onLog(String line) {
     debugPrint('[DL] $line');
     if (_isDisposed) return;
+    _logBuffer.add(line);
     _state = _state.copyWith(
-      logLines: [..._state.logLines, line],
+      logLines: List.of(_logBuffer),
     );
     notifyListeners();
   }
@@ -61,6 +64,7 @@ class DownloadController extends ChangeNotifier {
       tag: parsed.tag ?? 'latest',
       digest: parsed.digest,
       outputPath: outputPath,
+      logLines: List.of(_logBuffer),
       layers: List.generate(
         layersCount > 0 ? layersCount : 0,
         (i) => i < _state.layers.length
@@ -75,7 +79,7 @@ class DownloadController extends ChangeNotifier {
       outputDir: outputPath,
       currentState: _state.copyWith(phase: DownloadPhase.fetchingManifest),
     );
-    _state = _state.copyWith(phase: _state.phase);
+    _state = _state.copyWith(logLines: List.of(_logBuffer));
     notifyListeners();
   }
 
@@ -110,6 +114,7 @@ class DownloadController extends ChangeNotifier {
   }
 
   void reset() {
+    _logBuffer.clear();
     _state = DownloadState();
     _lastImageRef = null;
     _lastOutputPath = null;
