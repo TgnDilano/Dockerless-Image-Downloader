@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_typography.dart';
 
-class LogConsole extends StatelessWidget {
+class LogConsole extends StatefulWidget {
   final List<String> lines;
   final ScrollController scrollController;
 
@@ -11,60 +13,85 @@ class LogConsole extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+  State<LogConsole> createState() => _LogConsoleState();
+}
 
-    return Card(
+class _LogConsoleState extends State<LogConsole> {
+  bool _expanded = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
-      child: Theme(
-        data: theme.copyWith(dividerColor: Colors.transparent),
-        child: ExpansionTile(
-          title: Text(
-            'Log',
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w600,
+      decoration: BoxDecoration(
+        border: Border.all(color: AppColors.holdLine),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Column(
+        children: [
+          InkWell(
+            onTap: () => setState(() => _expanded = !_expanded),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              color: AppColors.hold,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'LOG',
+                          style: AppTypography.display(
+                            size: 14.5,
+                            color: AppColors.offWhite,
+                          ),
+                        ),
+                        Text(
+                          '${widget.lines.length} lines',
+                          style: AppTypography.mono(
+                            size: 11,
+                            color: AppColors.steelTextDim,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(
+                    _expanded ? Icons.chevron_left : Icons.expand_more,
+                    size: 16,
+                    color: AppColors.sealTeal,
+                  ),
+                ],
+              ),
             ),
           ),
-          subtitle: Text(
-            '${lines.length} lines',
-            style: theme.textTheme.bodySmall,
-          ),
-          initiallyExpanded: true,
-          children: [
+          if (_expanded)
             Container(
-              constraints: const BoxConstraints(maxHeight: 200),
-              decoration: BoxDecoration(
-                color: isDark ? Colors.black87 : const Color(0xFF1E1E1E),
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(12),
-                  bottomRight: Radius.circular(12),
-                ),
-              ),
+              constraints: const BoxConstraints(maxHeight: 220),
+              color: AppColors.ink,
               child: ListView.builder(
-                controller: scrollController,
+                controller: widget.scrollController,
                 shrinkWrap: true,
-                itemCount: lines.length,
+                itemCount: widget.lines.length,
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 2,
+                      horizontal: 20,
+                      vertical: 1,
                     ),
                     child: Text(
-                      lines[index],
-                      style: const TextStyle(
-                        fontFamily: 'monospace',
-                        fontSize: 12,
-                        color: Color(0xFFCCCCCC),
+                      widget.lines[index],
+                      style: AppTypography.mono(
+                        size: 12,
+                        color: AppColors.logText,
                       ),
                     ),
                   );
                 },
               ),
             ),
-          ],
-        ),
+        ],
       ),
     );
   }

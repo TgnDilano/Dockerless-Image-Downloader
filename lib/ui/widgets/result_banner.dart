@@ -1,6 +1,7 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import '../../utils/byte_format.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_typography.dart';
 
 class ResultBanner extends StatelessWidget {
   final String outputPath;
@@ -13,8 +14,8 @@ class ResultBanner extends StatelessWidget {
   const ResultBanner({
     super.key,
     required this.outputPath,
-    this.fileCount = 0,
-    this.totalSize = 0,
+    required this.fileCount,
+    required this.totalSize,
     required this.onPackage,
     required this.onDownloadAnother,
     this.isPackaging = false,
@@ -22,117 +23,127 @@ class ResultBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return Card(
-      margin: const EdgeInsets.all(16),
-      color: colorScheme.primaryContainer,
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.check_circle, color: colorScheme.primary, size: 28),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Download complete!',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: colorScheme.onPrimaryContainer,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '$fileCount files  •  ${formatBytes(totalSize)}',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
-                        ),
-                      ),
-                    ],
-                  ),
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        color: AppColors.hold,
+        border: Border.all(color: AppColors.holdLine),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 22,
+                height: 22,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.sealTeal,
                 ),
-              ],
+                child: const Icon(Icons.check, size: 14, color: Colors.white),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'DOWNLOAD COMPLETE',
+                style: AppTypography.display(size: 15, color: AppColors.offWhite),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          _infoRow('Files', '$fileCount'),
+          _infoRow('Size', formatBytes(totalSize)),
+          _infoRow('Path', outputPath),
+          if (!isPackaging) ...[
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: FilledButton.icon(
+                onPressed: onPackage,
+                icon: const Icon(Icons.archive_outlined, size: 17),
+                label: const Text('PACKAGE AS .TAR'),
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppColors.stencilOrange,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
+                  textStyle: AppTypography.display(size: 15, color: const Color(0xFFFFF6EE)),
+                ),
+              ),
             ),
-            const SizedBox(height: 16),
-            InkWell(
-              onTap: () => _openInExplorer(outputPath),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(8),
-                ),
+          ] else ...[
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: Center(
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.folder, size: 18, color: colorScheme.onSurfaceVariant),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        outputPath,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          fontFamily: 'monospace',
-                          color: colorScheme.primary,
-                        ),
-                        overflow: TextOverflow.ellipsis,
+                    const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation(AppColors.sealTeal),
                       ),
                     ),
-                    Icon(Icons.open_in_new, size: 16, color: colorScheme.primary),
+                    const SizedBox(width: 12),
+                    Text(
+                      'PACKAGING\u2026',
+                      style: AppTypography.display(
+                        size: 15,
+                        color: AppColors.steelTextDim,
+                      ),
+                    ),
                   ],
                 ),
               ),
             ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: FilledButton.icon(
-                    onPressed: isPackaging ? null : onPackage,
-                    icon: isPackaging
-                        ? const SizedBox(
-                            width: 18,
-                            height: 18,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Icon(Icons.archive_outlined),
-                    label: Text(isPackaging ? 'Packaging...' : 'Package as .tar'),
-                    style: FilledButton.styleFrom(
-                      minimumSize: const Size(0, 44),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                OutlinedButton.icon(
-                  onPressed: onDownloadAnother,
-                  icon: const Icon(Icons.refresh),
-                  label: const Text('Download another'),
-                  style: OutlinedButton.styleFrom(
-                    minimumSize: const Size(0, 44),
-                  ),
-                ),
-              ],
-            ),
           ],
-        ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            height: 48,
+            child: OutlinedButton.icon(
+              onPressed: onDownloadAnother,
+              icon: const Icon(Icons.add, size: 17),
+              label: const Text('DOWNLOAD ANOTHER'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.steelTextDim,
+                side: const BorderSide(color: AppColors.resetBorder),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
+                textStyle: AppTypography.body(size: 13, weight: FontWeight.w600),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  void _openInExplorer(String path) {
-    try {
-      if (Platform.isWindows) {
-        Process.run('explorer', [path]);
-      } else if (Platform.isMacOS) {
-        Process.run('open', [path]);
-      } else if (Platform.isLinux) {
-        Process.run('xdg-open', [path]);
-      }
-    } catch (_) {}
+  Widget _infoRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 3),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 80,
+            child: Text(
+              label,
+              style: AppTypography.mono(size: 11, color: AppColors.steelTextDim),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: AppTypography.mono(size: 11, color: AppColors.steelText),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

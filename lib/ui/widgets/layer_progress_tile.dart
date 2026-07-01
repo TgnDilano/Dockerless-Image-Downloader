@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../models/download_progress.dart';
 import '../../utils/byte_format.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_typography.dart';
 
 class LayerProgressTile extends StatelessWidget {
   final LayerProgress progress;
@@ -14,113 +16,124 @@ class LayerProgressTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final ratio = progress.totalBytes > 0
+        ? progress.downloadedBytes / progress.totalBytes
+        : 0.0;
+    final isDownloading = progress.status == LayerStatus.downloading;
+    final isDone = progress.status == LayerStatus.done;
+    final showProgress = isDownloading || isDone;
 
-    final statusIcon = _buildStatusIcon(colorScheme);
-
-    return Card(
-      margin: EdgeInsets.only(
+    return Padding(
+      padding: EdgeInsets.only(
         left: 16,
         right: 16,
-        top: 4,
-        bottom: isLast ? 16 : 4,
+        bottom: isLast ? 16 : 8,
       ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.hold,
+          border: Border.all(color: AppColors.holdLine),
+          borderRadius: BorderRadius.circular(4),
+        ),
+        padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                statusIcon,
-                const SizedBox(width: 12),
+                if (isDownloading)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2),
+                    child: SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: const AlwaysStoppedAnimation(AppColors.sealTeal),
+                        backgroundColor: AppColors.spinnerTrk,
+                      ),
+                    ),
+                  )
+                else
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2),
+                    child: Icon(
+                      isDone ? Icons.check_circle : Icons.circle_outlined,
+                      size: 22,
+                      color: isDone ? AppColors.sealTeal : AppColors.steelTextDim,
+                    ),
+                  ),
+                const SizedBox(width: 14),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         progress.shortId,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          fontFamily: 'monospace',
+                        style: AppTypography.mono(
+                          size: 14,
+                          weight: FontWeight.w600,
+                          color: AppColors.offWhite,
                         ),
                       ),
-                      if (progress.digest.isNotEmpty)
-                        Text(
-                          progress.digest,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            fontFamily: 'monospace',
-                            color: colorScheme.onSurfaceVariant,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                      const SizedBox(height: 3),
+                      Text(
+                        progress.digest,
+                        style: AppTypography.mono(
+                          size: 11.5,
+                          color: AppColors.steelTextDim,
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ],
                   ),
                 ),
+                const SizedBox(width: 12),
                 Text(
-                  '${formatBytes(progress.downloadedBytes)} / ${formatBytes(progress.totalBytes)}',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
+                  isDone
+                      ? formatBytes(progress.totalBytes)
+                      : '${formatBytes(progress.downloadedBytes)} / ${formatBytes(progress.totalBytes)}',
+                  style: AppTypography.mono(
+                    size: 12,
+                    color: AppColors.steelTextDim,
                   ),
                 ),
               ],
             ),
-            if (progress.status == LayerStatus.downloading ||
-                progress.status == LayerStatus.queued) ...[
-              const SizedBox(height: 8),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(4),
-                child: LinearProgressIndicator(
-                  value: progress.totalBytes > 0
-                      ? progress.downloadedBytes / progress.totalBytes
-                      : null,
-                  minHeight: 6,
-                  semanticsLabel: 'Layer ${progress.shortId}: '
-                      '${(progress.totalBytes > 0 ? progress.downloadedBytes / progress.totalBytes * 100 : 0).toStringAsFixed(0)}%',
+            if (showProgress) ...[
+              const SizedBox(height: 16),
+              Container(
+                height: 6,
+                decoration: BoxDecoration(
+                  color: AppColors.trackBg,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return Stack(
+                      children: [
+                        FractionallySizedBox(
+                          widthFactor: ratio.clamp(0.0, 1.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(4),
+                              gradient: const LinearGradient(
+                                colors: [AppColors.sealTealDark, AppColors.sealTeal],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ),
             ],
-            if (progress.errorMessage != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Text(
-                  progress.errorMessage!,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: colorScheme.error,
-                  ),
-                ),
-              ),
           ],
         ),
       ),
     );
   }
-
-  Widget _buildStatusIcon(ColorScheme colorScheme) {
-    switch (progress.status) {
-      case LayerStatus.queued:
-        return Icon(Icons.hourglass_empty, size: 20, color: colorScheme.onSurfaceVariant);
-      case LayerStatus.downloading:
-        return SizedBox(
-          width: 20,
-          height: 20,
-          child: CircularProgressIndicator(
-            strokeWidth: 2,
-            value: progress.totalBytes > 0
-                ? progress.downloadedBytes / progress.totalBytes
-                : null,
-          ),
-        );
-      case LayerStatus.verifying:
-        return Icon(Icons.verified, size: 20, color: colorScheme.tertiary);
-      case LayerStatus.done:
-        return Icon(Icons.check_circle, size: 20, color: colorScheme.primary);
-      case LayerStatus.error:
-        return Icon(Icons.error, size: 20, color: colorScheme.error);
-    }
-  }
-
-
 }
