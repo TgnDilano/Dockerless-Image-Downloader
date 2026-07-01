@@ -27,15 +27,6 @@ class ImageInputCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Color(0x80FFFFFF),
-            Color(0x00FFFFFF),
-          ],
-          stops: [0.0, 0.15],
-        ),
         color: AppColors.paper,
         borderRadius: BorderRadius.circular(3),
         boxShadow: const [
@@ -205,7 +196,7 @@ class ImageInputCard extends StatelessWidget {
               Text(
                 hint,
                 style: TextStyle(
-                  fontFamily: 'Inter',
+                  fontFamily: 'SpaceGrotesk',
                   fontSize: 11,
                   color: const Color(0xFF9A927A),
                 ),
@@ -251,7 +242,7 @@ class _BrowseButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 36,
+      height: 48,
       child: OutlinedButton.icon(
         onPressed: onPressed,
         icon: const Icon(Icons.folder_open, size: 13),

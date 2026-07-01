@@ -119,9 +119,7 @@ class LayerProgressTile extends StatelessWidget {
                           child: Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(4),
-                              gradient: const LinearGradient(
-                                colors: [AppColors.sealTealDark, AppColors.sealTeal],
-                              ),
+                              color: AppColors.sealTeal,
                             ),
                           ),
                         ),

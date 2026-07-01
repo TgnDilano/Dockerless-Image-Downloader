@@ -29,17 +29,14 @@ class CheckpointTrail extends StatelessWidget {
           if (i.isOdd) {
             final prev = checkpoints[i ~/ 2];
             return Expanded(
-              child: Container(
-                height: 0,
-                margin: const EdgeInsets.only(bottom: 28),
-                decoration: BoxDecoration(
-                  border: Border(
-                    top: BorderSide(
-                      color: prev.done
-                          ? const Color(0xFF2F6F62).withValues(alpha: 0.75)
-                          : const Color(0xFF3A4750),
-                      width: 2,
-                    ),
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 28),
+                child: CustomPaint(
+                  size: const Size(double.infinity, 2),
+                  painter: _DottedLinePainter(
+                    color: prev.done
+                        ? const Color(0xFF2F6F62).withValues(alpha: 0.75)
+                        : const Color(0xFF3A4750),
                   ),
                 ),
               ),
@@ -52,6 +49,34 @@ class CheckpointTrail extends StatelessWidget {
       ),
     );
   }
+}
+
+class _DottedLinePainter extends CustomPainter {
+  final Color color;
+  _DottedLinePainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 2
+      ..style = PaintingStyle.stroke;
+    const dashWidth = 6.0;
+    const dashGap = 4.0;
+    double x = 0;
+    while (x < size.width) {
+      canvas.drawLine(
+        Offset(x, 1),
+        Offset((x + dashWidth).clamp(0, size.width), 1),
+        paint,
+      );
+      x += dashWidth + dashGap;
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _DottedLinePainter oldDelegate) =>
+      oldDelegate.color != color;
 }
 
 class _CheckpointStamp extends StatefulWidget {
@@ -210,10 +235,10 @@ class _CheckpointStampState extends State<_CheckpointStamp>
         children: [
           stamp,
           const SizedBox(height: 8),
-          Text(
+            Text(
             cp.label.toUpperCase(),
             style: TextStyle(
-              fontFamily: 'IBMPlexMono',
+              fontFamily: 'SpaceGrotesk',
               fontSize: 11,
               letterSpacing: 0.08,
               color: cp.done || cp.active
@@ -225,6 +250,7 @@ class _CheckpointStampState extends State<_CheckpointStamp>
           Text(
             cp.sub,
             style: TextStyle(
+              fontFamily: 'SpaceGrotesk',
               fontSize: 10,
               color: cp.done || cp.active
                   ? const Color(0xFF2F6F62)

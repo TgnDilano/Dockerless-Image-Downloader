@@ -10,7 +10,7 @@ class AppTypography {
     Color? color,
     double letterSpacing = 0.4,
   }) =>
-      GoogleFonts.oswald(
+      GoogleFonts.spaceGrotesk(
         fontSize: size,
         fontWeight: weight,
         color: color,
@@ -22,7 +22,7 @@ class AppTypography {
     FontWeight weight = FontWeight.w400,
     Color? color,
   }) =>
-      GoogleFonts.inter(fontSize: size, fontWeight: weight, color: color);
+      GoogleFonts.spaceGrotesk(fontSize: size, fontWeight: weight, color: color);
 
   static TextStyle mono({
     double size = 13,
@@ -30,7 +30,7 @@ class AppTypography {
     Color? color,
     double letterSpacing = 0,
   }) =>
-      GoogleFonts.ibmPlexMono(
+      GoogleFonts.spaceGrotesk(
         fontSize: size,
         fontWeight: weight,
         color: color,

@@ -324,11 +324,7 @@ class _HomePageState extends State<HomePage> {
             height: 46,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(6),
-              gradient: const LinearGradient(
-                begin: Alignment(1.55, 0),
-                end: Alignment(1.55, 1),
-                colors: [AppColors.stencilOrange, AppColors.stencilOrangeDark],
-              ),
+              color: AppColors.stencilOrange,
               boxShadow: [
                 BoxShadow(
                   color: AppColors.stencilOrange.withValues(alpha: 0.25),
