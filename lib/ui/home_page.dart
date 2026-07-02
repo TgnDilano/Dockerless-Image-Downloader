@@ -8,11 +8,13 @@ import '../models/download_progress.dart';
 import '../state/download_controller.dart';
 import 'theme/app_colors.dart';
 import 'theme/app_typography.dart';
+import 'widgets/app_footer.dart';
 import 'widgets/checkpoint_trail.dart';
 import 'widgets/image_input_card.dart';
 import 'widgets/layer_progress_tile.dart';
 import 'widgets/log_console.dart';
 import 'widgets/result_banner.dart';
+import 'widgets/sidebar.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -187,126 +189,110 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.ink,
-      body: Consumer<DownloadController>(
-        builder: (context, controller, _) {
-          final state = controller.state;
-          final isDownloading = state.phase == DownloadPhase.authenticating ||
-              state.phase == DownloadPhase.fetchingManifest ||
-              state.phase == DownloadPhase.resolvingManifest ||
-              state.phase == DownloadPhase.downloadingLayers ||
-              state.phase == DownloadPhase.finalizing;
-          final isDone = state.phase == DownloadPhase.done;
-          final isError = state.phase == DownloadPhase.error;
+      body: SafeArea(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const AppSidebar(),
+            Expanded(
+              child: Column(
+                children: [
+                  Expanded(
+                    child: Consumer<DownloadController>(
+                      builder: (context, controller, _) {
+                        final state = controller.state;
+                        final isDownloading = state.phase == DownloadPhase.authenticating ||
+                            state.phase == DownloadPhase.fetchingManifest ||
+                            state.phase == DownloadPhase.resolvingManifest ||
+                            state.phase == DownloadPhase.downloadingLayers ||
+                            state.phase == DownloadPhase.finalizing;
+                        final isDone = state.phase == DownloadPhase.done;
+                        final isError = state.phase == DownloadPhase.error;
 
-          return SingleChildScrollView(
-            controller: _scrollController,
-            child: Center(
-              child: Container(
-                constraints: const BoxConstraints(maxWidth: 880),
-                padding: const EdgeInsets.fromLTRB(24, 48, 24, 80),
-                child: Column(
-                  children: [
-                    _buildHeader(),
-                    const SizedBox(height: 34),
-                    if (isDownloading || isDone || isError)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 40),
-                        child: CheckpointTrail(
-                          checkpoints: _buildCheckpoints(state),
-                        ),
-                      ),
-                    ImageInputCard(
-                      controller: _imageController,
-                      selectedPath: _selectedPath,
-                      isLoading: isDownloading,
-                      validationError: _validationError,
-                      onBrowse: _pickFolder,
-                      onDownload: _startDownload,
-                      onReset: isDone || isError ? _resetAll : null,
-                    ),
-                    if (isDone && !isError)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              width: 6,
-                              height: 6,
-                              decoration: const BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: AppColors.sealTeal,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Color(0x26FF6F62),
-                                    blurRadius: 0,
-                                    spreadRadius: 3,
+                        return SingleChildScrollView(
+                          controller: _scrollController,
+                          child: Center(
+                            child: Container(
+                              constraints: const BoxConstraints(maxWidth: 880),
+                              padding: const EdgeInsets.fromLTRB(24, 48, 24, 40),
+                              child: Column(
+                                children: [
+                                  _buildHeader(),
+                                  const SizedBox(height: 34),
+                                  if (isDownloading || isDone || isError)
+                                    Padding(
+                                      padding: const EdgeInsets.only(bottom: 40),
+                                      child: CheckpointTrail(
+                                        checkpoints: _buildCheckpoints(state),
+                                      ),
+                                    ),
+                                  ImageInputCard(
+                                    controller: _imageController,
+                                    selectedPath: _selectedPath,
+                                    isLoading: isDownloading,
+                                    validationError: _validationError,
+                                    onBrowse: _pickFolder,
+                                    onDownload: _startDownload,
+                                    onReset: isDone || isError ? _resetAll : null,
                                   ),
+                                  // Error banner
+                                  if (isError && state.errorMessage != null)
+                                    _buildErrorBanner(state.errorMessage!, controller),
+                                  // Layer progress
+                                  if (state.layers.isNotEmpty) ...[
+                                    const SizedBox(height: 40),
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 18, bottom: 14),
+                                      child: Text(
+                                        'LAYERS',
+                                        style: AppTypography.display(
+                                          size: 15,
+                                          color: const Color(0xFFE7E2D3),
+                                        ),
+                                      ),
+                                    ),
+                                    ...List.generate(state.layers.length, (i) {
+                                      return LayerProgressTile(
+                                        progress: state.layers[i],
+                                        isLast: i == state.layers.length - 1,
+                                      );
+                                    }),
+                                  ],
+                                  // Log console
+                                  if (state.logLines.isNotEmpty) ...[
+                                    const SizedBox(height: 22),
+                                    LogConsole(
+                                      lines: state.logLines,
+                                      scrollController: _logScrollController,
+                                    ),
+                                  ],
+                                  // Result banner
+                                  if (isDone && state.outputPath != null) ...[
+                                    const SizedBox(height: 16),
+                                    ResultBanner(
+                                      outputPath: state.outputPath!,
+                                      fileCount: _fileCount,
+                                      totalSize: _totalSize,
+                                      onPackage: _packageAsTar,
+                                      onDownloadAnother: _resetAll,
+                                      isPackaging: _isPackaging,
+                                    ),
+                                  ],
+                                  const SizedBox(height: 24),
                                 ],
                               ),
                             ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Pulled directly from the registry \u2014 '
-                              'no local Docker daemon needed.',
-                              style: AppTypography.mono(
-                                size: 11,
-                                color: AppColors.graphiteSoft,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    // Error banner
-                    if (isError && state.errorMessage != null)
-                      _buildErrorBanner(state.errorMessage!, controller),
-                    // Layer progress
-                    if (state.layers.isNotEmpty) ...[
-                      const SizedBox(height: 40),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 18, bottom: 14),
-                        child: Text(
-                          'LAYERS',
-                          style: AppTypography.display(
-                            size: 15,
-                            color: const Color(0xFFE7E2D3),
                           ),
-                        ),
-                      ),
-                      ...List.generate(state.layers.length, (i) {
-                        return LayerProgressTile(
-                          progress: state.layers[i],
-                          isLast: i == state.layers.length - 1,
                         );
-                      }),
-                    ],
-                    // Log console
-                    if (state.logLines.isNotEmpty) ...[
-                      const SizedBox(height: 22),
-                      LogConsole(
-                        lines: state.logLines,
-                        scrollController: _logScrollController,
-                      ),
-                    ],
-                    // Result banner
-                    if (isDone && state.outputPath != null) ...[
-                      const SizedBox(height: 16),
-                      ResultBanner(
-                        outputPath: state.outputPath!,
-                        fileCount: _fileCount,
-                        totalSize: _totalSize,
-                        onPackage: _packageAsTar,
-                        onDownloadAnother: _resetAll,
-                        isPackaging: _isPackaging,
-                      ),
-                    ],
-                    const SizedBox(height: 24),
-                  ],
-                ),
+                      },
+                    ),
+                  ),
+                  const AppFooter(),
+                ],
               ),
             ),
-          );
-        },
+          ],
+        ),
       ),
     );
   }
@@ -317,65 +303,31 @@ class _HomePageState extends State<HomePage> {
       decoration: const BoxDecoration(
         border: Border(bottom: BorderSide(color: AppColors.holdLine)),
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 46,
-            height: 46,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(6),
+          Text(
+            'CARGO MANIFEST',
+            style: AppTypography.mono(
+              size: 11,
               color: AppColors.stencilOrange,
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.stencilOrange.withValues(alpha: 0.25),
-                  blurRadius: 14,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(6),
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.18),
-                  width: 1,
-                ),
-              ),
-              child: const Icon(
-                Icons.inventory_2_outlined,
-                color: Colors.white,
-                size: 24,
-              ),
+              letterSpacing: 1.76,
             ),
           ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'REGISTRY MANIFEST \u00B7 NO DAEMON REQUIRED',
-                  style: AppTypography.mono(
-                    size: 11,
-                    color: AppColors.stencilOrange,
-                    letterSpacing: 1.76,
-                  ),
-                ),
-                Text(
-                  'Docker Image Downloader',
-                  style: AppTypography.display(
-                    size: 26,
-                    color: AppColors.offWhite,
-                  ),
-                ),
-                Text(
-                  'Pull an image straight to disk, layer by layer.',
-                  style: AppTypography.body(
-                    size: 13,
-                    color: AppColors.steelTextDim,
-                  ),
-                ),
-              ],
+          const SizedBox(height: 4),
+          Text(
+            'Docker Image Downloader',
+            style: AppTypography.display(
+              size: 26,
+              color: AppColors.offWhite,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Pull an image straight to disk, layer by layer.',
+            style: AppTypography.body(
+              size: 13,
+              color: AppColors.steelTextDim,
             ),
           ),
         ],
