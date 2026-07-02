@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:window_manager/window_manager.dart';
 import 'state/download_controller.dart';
 import 'ui/home_page.dart';
 import 'ui/theme/app_colors.dart';
 import 'ui/theme/app_typography.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await windowManager.ensureInitialized();
+  windowManager.waitUntilReadyToShow().then((_) async {
+    await windowManager.setAsFrameless();
+    await windowManager.show();
+  });
   runApp(
     ChangeNotifierProvider(
       create: (_) => DownloadController(),

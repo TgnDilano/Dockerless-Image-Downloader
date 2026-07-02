@@ -9,9 +9,9 @@ class AppSidebar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 220,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.hold,
-        border: const Border(right: BorderSide(color: Color(0xFF202020))),
+        border: Border(right: BorderSide(color: Color(0xFF202020))),
       ),
       child: Column(
         children: [
