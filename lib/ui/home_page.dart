@@ -190,13 +190,13 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: AppColors.ink,
       body: SafeArea(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Column(
           children: [
-            const AppSidebar(),
             Expanded(
-              child: Column(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  const AppSidebar(),
                   Expanded(
                     child: Consumer<DownloadController>(
                       builder: (context, controller, _) {
@@ -209,9 +209,11 @@ class _HomePageState extends State<HomePage> {
                         final isDone = state.phase == DownloadPhase.done;
                         final isError = state.phase == DownloadPhase.error;
 
-                        return SingleChildScrollView(
-                          controller: _scrollController,
-                          child: Center(
+                        return ScrollConfiguration(
+                          behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
+                          child: SingleChildScrollView(
+                            controller: _scrollController,
+                            child: Center(
                             child: Container(
                               constraints: const BoxConstraints(maxWidth: 880),
                               padding: const EdgeInsets.fromLTRB(24, 48, 24, 40),
@@ -282,14 +284,15 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ),
                           ),
-                        );
-                      },
+                        ),
+                      );
+                    },
                     ),
                   ),
-                  const AppFooter(),
                 ],
               ),
             ),
+            const AppFooter(),
           ],
         ),
       ),

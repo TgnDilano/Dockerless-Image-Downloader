@@ -83,11 +83,46 @@ class AppSidebar extends StatelessWidget {
           _dividerLine(),
           _label('DESTINATION', 'LOCAL DISK'),
           const Spacer(),
-          // Bottom stripe
+          // Offline Import card
           Container(
-            height: 3,
-            margin: const EdgeInsets.symmetric(horizontal: 28),
-            decoration: const BoxDecoration(color: AppColors.sealTeal),
+            margin: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppColors.hold,
+              border: Border.all(color: AppColors.sealTeal.withValues(alpha: 0.5)),
+              borderRadius: BorderRadius.circular(3),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.cloud_download_outlined,
+                      size: 18,
+                      color: AppColors.sealTeal,
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      'OFFLINE IMPORT MODE',
+                      style: AppTypography.mono(
+                        size: 10,
+                        color: AppColors.sealTeal,
+                        letterSpacing: 0.6,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'This utility reconstructs original tarball layers on-the-fly without needing any native Docker client. Simply import later via docker load!',
+                  style: AppTypography.body(
+                    size: 11,
+                    color: AppColors.steelTextDim,
+                  ),
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 24),
         ],
