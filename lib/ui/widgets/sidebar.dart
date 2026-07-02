@@ -55,7 +55,7 @@ class AppSidebar extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: AppColors.hold,
-              border: Border.all(color: AppColors.sealTeal.withValues(alpha: 0.5)),
+              border: Border.all(color: AppColors.stencilOrange.withValues(alpha: 0.5)),
               borderRadius: BorderRadius.circular(3),
             ),
             child: Column(
@@ -66,14 +66,14 @@ class AppSidebar extends StatelessWidget {
                     Icon(
                       Icons.cloud_download_outlined,
                       size: 18,
-                      color: AppColors.sealTeal,
+                      color: AppColors.stencilOrange,
                     ),
                     const SizedBox(width: 10),
                     Text(
                       'OFFLINE IMPORT MODE',
                       style: AppTypography.mono(
                         size: 10,
-                        color: AppColors.sealTeal,
+                        color: AppColors.stencilOrange,
                         letterSpacing: 0.6,
                       ),
                     ),
