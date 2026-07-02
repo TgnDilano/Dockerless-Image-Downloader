@@ -219,13 +219,12 @@ class _HomePageState extends State<HomePage> {
                                 children: [
                                   _buildHeader(),
                                   const SizedBox(height: 34),
-                                  if (isDownloading || isDone || isError)
-                                    Padding(
-                                      padding: const EdgeInsets.only(bottom: 40),
-                                      child: CheckpointTrail(
-                                        checkpoints: _buildCheckpoints(state),
-                                      ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 40),
+                                    child: CheckpointTrail(
+                                      checkpoints: _buildCheckpoints(state),
                                     ),
+                                  ),
                                   ImageInputCard(
                                     controller: _imageController,
                                     selectedPath: _selectedPath,
