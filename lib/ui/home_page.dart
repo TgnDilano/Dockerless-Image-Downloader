@@ -13,6 +13,7 @@ import 'widgets/checkpoint_trail.dart';
 import 'widgets/image_input_card.dart';
 import 'widgets/layer_progress_tile.dart';
 import 'widgets/log_console.dart';
+import 'widgets/app_navbar.dart';
 import 'widgets/result_banner.dart';
 import 'widgets/sidebar.dart';
 
@@ -192,6 +193,7 @@ class _HomePageState extends State<HomePage> {
       body: SafeArea(
         child: Column(
           children: [
+            const AppNavbar(),
             Expanded(
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -305,31 +307,56 @@ class _HomePageState extends State<HomePage> {
       decoration: const BoxDecoration(
         border: Border(bottom: BorderSide(color: AppColors.holdLine)),
       ),
-      child: Column(
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'CARGO MANIFEST',
-            style: AppTypography.mono(
-              size: 11,
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
               color: AppColors.stencilOrange,
-              letterSpacing: 1.76,
+              borderRadius: BorderRadius.circular(6),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.15),
+                width: 1,
+              ),
             ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'Docker Image Downloader',
-            style: AppTypography.display(
+            child: const Icon(
+              Icons.inventory_2_outlined,
+              color: Colors.white,
               size: 26,
-              color: AppColors.offWhite,
             ),
           ),
-          const SizedBox(height: 4),
-          Text(
-            'Pull an image straight to disk, layer by layer.',
-            style: AppTypography.body(
-              size: 13,
-              color: AppColors.steelTextDim,
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'CARGO MANIFEST',
+                  style: AppTypography.mono(
+                    size: 11,
+                    color: AppColors.stencilOrange,
+                    letterSpacing: 1.76,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Docker Image Downloader',
+                  style: AppTypography.display(
+                    size: 26,
+                    color: AppColors.offWhite,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Pull an image straight to disk, layer by layer.',
+                  style: AppTypography.body(
+                    size: 13,
+                    color: AppColors.steelTextDim,
+                  ),
+                ),
+              ],
             ),
           ),
         ],

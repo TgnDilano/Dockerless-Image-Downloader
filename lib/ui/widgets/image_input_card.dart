@@ -73,12 +73,18 @@ class ImageInputCard extends StatelessWidget {
                         children: [
                           Text(
                             'CARGO MANIFEST',
-                            style: AppTypography.display(size: 19),
+                            style: AppTypography.display(
+                              size: 19,
+                              color: AppColors.graphiteSoft,
+                            ),
                           ),
                           const SizedBox(height: 4),
                           Text(
                             'Enter the image to fetch and where it should land.',
-                            style: AppTypography.body(size: 12.5, color: AppColors.graphiteSoft),
+                            style: AppTypography.body(
+                              size: 12.5,
+                              color: AppColors.graphiteSoft,
+                            ),
                           ),
                         ],
                       ),
@@ -89,11 +95,17 @@ class ImageInputCard extends StatelessWidget {
                       children: [
                         Text(
                           'FORM  [namespace/]name[:tag][@digest]',
-                          style: AppTypography.mono(size: 11, color: AppColors.graphiteSoft),
+                          style: AppTypography.mono(
+                            size: 11,
+                            color: AppColors.graphiteSoft,
+                          ),
                         ),
                         Text(
                           'REV  2026.07.02',
-                          style: AppTypography.mono(size: 11, color: AppColors.graphiteSoft),
+                          style: AppTypography.mono(
+                            size: 11,
+                            color: AppColors.graphiteSoft,
+                          ),
                         ),
                       ],
                     ),
@@ -115,13 +127,19 @@ class ImageInputCard extends StatelessWidget {
                     icon: Icons.image_outlined,
                     child: TextField(
                       controller: controller,
-                      style: AppTypography.mono(size: 14.5, color: AppColors.graphite),
+                      style: AppTypography.mono(
+                        size: 14.5,
+                        color: AppColors.graphite,
+                      ),
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         isDense: true,
                         contentPadding: EdgeInsets.zero,
                         hintText: 'e.g. alpine:latest',
-                        hintStyle: AppTypography.mono(size: 14.5, color: AppColors.placeholder),
+                        hintStyle: AppTypography.mono(
+                          size: 14.5,
+                          color: AppColors.placeholder,
+                        ),
                       ),
                     ),
                   ),
@@ -138,7 +156,10 @@ class ImageInputCard extends StatelessWidget {
                           child: Text(
                             selectedPath ?? 'Click Browse to select...',
                             overflow: TextOverflow.ellipsis,
-                            style: AppTypography.mono(size: 14.5, color: AppColors.graphite),
+                            style: AppTypography.mono(
+                              size: 14.5,
+                              color: AppColors.graphite,
+                            ),
                           ),
                         ),
                       ),
@@ -153,7 +174,8 @@ class ImageInputCard extends StatelessWidget {
                     Expanded(
                       child: _DownloadButton(
                         isLoading: isLoading,
-                        onPressed: (selectedPath != null &&
+                        onPressed:
+                            (selectedPath != null &&
                                 controller.text.trim().isNotEmpty &&
                                 validationError == null &&
                                 !isLoading)
@@ -176,7 +198,11 @@ class ImageInputCard extends StatelessWidget {
     );
   }
 
-  Widget _buildField({required String label, required String hint, required Widget child}) {
+  Widget _buildField({
+    required String label,
+    required String hint,
+    required Widget child,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -254,7 +280,7 @@ class _BrowseButton extends StatelessWidget {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
           textStyle: AppTypography.body(size: 12.5, weight: FontWeight.w600),
           padding: const EdgeInsets.symmetric(horizontal: 14),
-             ),
+        ),
       ),
     );
   }
@@ -314,13 +340,21 @@ class _DownloadButton extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.download, size: 17, color: onPressed != null ? const Color(0xFFFFF6EE) : const Color(0xFF9AA4AB)),
+            Icon(
+              Icons.download,
+              size: 17,
+              color: onPressed != null
+                  ? const Color(0xFFFFF6EE)
+                  : const Color(0xFF9AA4AB),
+            ),
             const SizedBox(width: 10),
             Text(
               'DOWNLOAD',
               style: AppTypography.display(
                 size: 15,
-                color: onPressed != null ? const Color(0xFFFFF6EE) : const Color(0xFF9AA4AB),
+                color: onPressed != null
+                    ? const Color(0xFFFFF6EE)
+                    : const Color(0xFF9AA4AB),
               ),
             ),
           ],
@@ -344,7 +378,10 @@ class _ResetButton extends StatelessWidget {
         label: const Text('Reset'),
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.graphiteSoft,
-          side: const BorderSide(color: AppColors.resetBorder, style: BorderStyle.solid),
+          side: const BorderSide(
+            color: AppColors.resetBorder,
+            style: BorderStyle.solid,
+          ),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
           textStyle: AppTypography.body(size: 13, weight: FontWeight.w600),
           padding: const EdgeInsets.symmetric(horizontal: 20),

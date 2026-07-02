@@ -15,41 +15,7 @@ class AppSidebar extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const SizedBox(height: 32),
-          // Brand block
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: AppColors.stencilOrange,
-              borderRadius: BorderRadius.circular(6),
-              border: Border.all(
-                color: Colors.white.withValues(alpha: 0.15),
-                width: 1,
-              ),
-            ),
-            child: const Icon(
-              Icons.inventory_2_outlined,
-              color: Colors.white,
-              size: 26,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'DOCKER\nDOWNLOADER',
-            textAlign: TextAlign.center,
-            style: AppTypography.display(
-              size: 15,
-              color: AppColors.offWhite,
-              letterSpacing: 0.6,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'v0.1.0',
-            style: AppTypography.mono(size: 10, color: AppColors.steelTextDim),
-          ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 16),
           // Divider with dot
           SizedBox(
             width: 80,
