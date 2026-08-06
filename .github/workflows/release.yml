@@ -8,6 +8,12 @@ on:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build-macos:
@@ -32,16 +38,16 @@ jobs:
       - name: Package DMG
         run: |
           hdiutil create \
-            -volname "XDockerless" \
-            -srcfolder "build/macos/Build/Products/Release/XDockerless.app" \
+            -volname "DockerXLess" \
+            -srcfolder "build/macos/Build/Products/Release/DockerXLess.app" \
             -ov -format UDZO \
-            "XDockerless-macos.dmg"
+            "DockerXLess-macos.dmg"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v7
         with:
           name: macos-build
-          path: XDockerless-macos.dmg
+          path: DockerXLess-macos.dmg
 
   build-windows:
     name: Build Windows
@@ -67,13 +73,44 @@ jobs:
         run: |
           Compress-Archive `
             -Path "build/windows/x64/runner/Release/*" `
-            -DestinationPath "XDockerless-windows.zip"
+            -DestinationPath "DockerXLess-windows.zip"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v7
         with:
           name: windows-build
-          path: XDockerless-windows.zip
+          path: DockerXLess-windows.zip
+
+  deploy-web:
+    name: Deploy Web to GitHub Pages
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Pub get
+        run: flutter pub get
+
+      - name: Build web app
+        run: flutter build web --release --base-href /Dockerless-Image-Downloader/
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/web
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
 
   release:
     name: Publish GitHub Release

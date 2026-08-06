@@ -59,7 +59,7 @@ class DockerImageDownloaderApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Docker Image Downloader',
+      title: 'DockerXLess',
       debugShowCheckedModeBanner: false,
       theme: _buildTheme(),
       home: const HomePage(),
