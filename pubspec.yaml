@@ -28,7 +28,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/box-icon.svg
+    - assets/box-icon.png
 
 flutter_launcher_icons:
   android: true

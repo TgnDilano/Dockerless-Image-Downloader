@@ -32,7 +32,7 @@ Future<void> _initWindow() async {
   const size = Size(1024, 640);
   final options = const WindowOptions(
     size: size,
-    minimumSize: Size(800, 500), // allow shrinking down to this
+    minimumSize: Size(800, 500),
     // no maximumSize -> allows growing
     center: true,
     titleBarStyle: TitleBarStyle.hidden,
